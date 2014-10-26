@@ -63,14 +63,27 @@ var fluid = fluid || require("infusion"),
             }
             else
             {
-                pauseBack(that);
+                pauseBack(that); 
+                that.eventsRef.update({playing:false});
             }
         });
     };
 
     var setupReloadButton = function (that) {
         that.reloadButton.click( function () {
-            console.log("test button clicked")
+            pauseBack(that);
+            setTimeout(function () {
+                if (flock.enviro.shared.model.isPlaying)
+                {
+                  that.eventsRef.update({playing:true});  
+                }
+                else
+                {
+                  that.eventsRef.update({playing:false})
+                }
+            }, 50)
+            playBack(that);
+            
         })
     };
 
@@ -81,8 +94,14 @@ var fluid = fluid || require("infusion"),
         that.eventsRef.once('value', function(snapshot) {
             that.playing = snapshot.child('playing').val();
         });
-        console.log('got playing');
-        console.log(that.playing);
+        if (that.playing)
+        {
+          that.reloadButton.prop("disabled", false)  
+        } 
+        else
+        {
+          that.reloadButton.prop("disabled", true)
+        }
     }
 
     function getFirepadRef() {
@@ -124,7 +143,6 @@ var fluid = fluid || require("infusion"),
     }
 
     function pauseBack(that){
-        that.eventsRef.update({playing:false});
         that.playButton.html("Play");
         that.playButton.removeClass("playing");
         that.playButton.addClass("paused");
@@ -166,7 +184,8 @@ var fluid = fluid || require("infusion"),
             getPlaying(that);          
             if (that.playing) { // && !flock.enviro.shared.model.isPlaying
                 playBack(that);
-            } else {
+            } 
+            else {
                 pauseBack(that);
             }
         });
