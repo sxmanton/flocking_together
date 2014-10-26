@@ -1,0 +1,74 @@
+<html>
+<head>
+  <meta charset="utf-8" />
+  <!-- Firebase -->
+  <script src="https://cdn.firebase.com/js/client/1.0.17/firebase.js"></script>
+
+  <!-- CodeMirror and its JavaScript mode file -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/codemirror.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/mode/javascript/javascript.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/codemirror.css" />
+
+  <!-- Firepad -->
+  <link rel="stylesheet" href="https://cdn.firebase.com/libs/firepad/1.0.0/firepad.css" />
+  <script src="https://cdn.firebase.com/libs/firepad/1.0.0/firepad.min.js"></script>
+
+  <script src="js/flocking-all.js"></script>
+  <script src="js/playground.js"></script>
+
+  <title>Flocking Together</title>
+
+</head>
+
+<body>
+  <div class="left">
+    <!-- Play Button -->
+    <button class="playButton paused icon-">Play</button>
+  </div>
+  <!-- Placeholder for the interactive editor -->
+            <div id="editorRegion"></div>
+
+        <script>
+            var editorView = demo.liveEditorView("#editorRegion");
+        </script>
+  <div id="firepad-container"></div>
+<!--
+  <script>
+    function init() {
+      //// Initialize Firebase.
+      var firepadRef = getExampleRef();
+      // TODO: Replace above line with:
+      // var ref = new Firebase('<YOUR FIREBASE URL>');
+
+      //// Create CodeMirror (with line numbers and the JavaScript mode).
+      var codeMirror = CodeMirror(document.getElementById('firepad-container'), {
+        lineNumbers: true,
+        mode: 'javascript'
+      });
+
+      //// Create Firepad.
+      var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror, {
+        defaultText: '// JavaScript Editing with Firepad!\nfunction go() {\n  var message = "Hello, world.";\n  console.log(message);\n}'
+      });
+    }
+
+    // Helper to get hash from end of URL or generate a random one.
+    function getExampleRef() {
+      var ref = new Firebase('https://firepad.firebaseio-demo.com');
+      var hash = window.location.hash.replace(/#/g, '');
+      if (hash) {
+        ref = ref.child(hash);
+      } else {
+        ref = ref.push(); // generate unique location.
+        window.location = window.location + '#' + ref.name(); // add it as a hash to the URL.
+      }
+      if (typeof console !== 'undefined')
+        console.log('Firebase data: ', ref.toString());
+      return ref;
+    }
+
+    init();
+  </script>
+-->
+</body>
+
