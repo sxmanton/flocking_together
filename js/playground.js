@@ -47,51 +47,31 @@ var fluid = fluid || require("infusion"),
 
     var setupPlayButton = function (that) {
         // TODO: might be able to avoid eval()'ing if we load each demo's JavaScript source via Ajax and inject it as a script block.
-        that.eventsRef = getEventsRef();
-        that.playButton.click(function () {  
-            togglePlaying(that);          
-            if (!flock.enviro.shared.model.isPlaying && !that.playing) {
-                play(that);
-            } 
-            else {
-                pause(that);                
+        that.eventsRef = getEventsRef();        
+        that.playButton.click( function () { 
+            if (!flock.enviro.shared.model.isPlaying)
+            {
+                playBack(that);
+                if (flock.enviro.shared.model.isPlaying)
+                {
+                  that.eventsRef.update({playing:true});  
+                }                
+            }
+            else
+            {
+                pauseBack(that);
             }
         });
     };
 
-    function play(that) {        
-        eval(that.editor.getText()); // jshint ignore:line
-        that.playButton.html("Pause");
-        that.playButton.removeClass("paused");
-        that.playButton.addClass("playing");                
-        flock.enviro.shared.play();
-    }
-
-    function pause(that) {
-        that.playButton.html("Play");
-        that.playButton.removeClass("playing");
-        that.playButton.addClass("paused");
-        flock.enviro.shared.reset();
-    }
+            
+            
 
     function getPlaying(that) {
         that.eventsRef.once('value', function(snapshot) {
             that.playing = snapshot.child('playing').val();
+            console.log(that.playing);
         });
-    }
-
-    function togglePlaying(that) {
-        getPlaying(that);
-        that.eventsRef.off('child_changed')
-        if (that.playing)
-        {
-            that.eventsRef.update({playing:true});
-        }
-        else
-        {
-            that.eventsRef.update({playing:false});
-        }
-        addPlayingListener(that);       
     }
 
     var setupLoadControls = function (that) {
@@ -131,13 +111,20 @@ var fluid = fluid || require("infusion"),
       return ref;
     }
 
-    function addPlayingListener(that)
-    {
-        that.eventsRef.on('child_changed',function(snapshot){
-            console.log(that.playing);
-            that.playButton.click();
-            console.log(that.playing);
-        });
+    function playBack(that){
+        eval(that.editor.getText()); // jshint ignore:line
+        that.playButton.html("Pause");
+        that.playButton.removeClass("paused");
+        that.playButton.addClass("playing");                
+        flock.enviro.shared.play();
+    }
+
+    function pauseBack(that){
+        that.eventsRef.update({playing:false});
+        that.playButton.html("Play");
+        that.playButton.removeClass("playing");
+        that.playButton.addClass("paused");
+        flock.enviro.shared.reset();
     }
 
     demo.liveEditorView = function (editorId, selectors) {
@@ -155,16 +142,16 @@ var fluid = fluid || require("infusion"),
         setupEditor(that, editorId);
         setupPlayButton(that);
         setupLoadControls(that);
+        that.simulated = false;        
 
-        getPlaying(that);
-        if (that.playing)
-        {
-            play(that);
-        }
-
-        addPlayingListener(that);
-
-        
+        that.eventsRef.on('child_changed',function(snapshot){
+            getPlaying(that);           
+            if (that.playing) { // && !flock.enviro.shared.model.isPlaying
+                playBack(that);
+            } else {
+                pauseBack(that);
+            }
+        });
         return that;
     };
 
