@@ -24,6 +24,7 @@ var fluid = fluid || require("infusion"),
     var setupEditor = function (that, container, theme) {
         theme = theme || "flockingcm";
         container = typeof (container) === "string" ? document.querySelector(container) : container;
+        that.firePadInitialized = false;
 
         var firepadRef = getFirepadRef();
 
@@ -42,7 +43,10 @@ var fluid = fluid || require("infusion"),
             lineNumbers: true
         });
 
-        that.editor = Firepad.fromCodeMirror(firepadRef, codeMirror);
+        var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror);
+        firepad.on('ready', function() {that.firePadInitialized = true;})
+        that.editor = firepad;
+
     };
 
     var setupPlayButton = function (that) {
@@ -64,22 +68,22 @@ var fluid = fluid || require("infusion"),
         });
     };
 
+    var setupReloadButton = function (that) {
+        that.reloadButton.click( function () {
+            console.log("test button clicked")
+        })
+    };
+
             
             
 
     function getPlaying(that) {
         that.eventsRef.once('value', function(snapshot) {
             that.playing = snapshot.child('playing').val();
-            console.log(that.playing);
         });
+        console.log('got playing');
+        console.log(that.playing);
     }
-
-    var setupLoadControls = function (that) {
-        $(that.selectors.loadButton).click(that.loadSelectedDemo);
-
-        // Automatically load the demo whenever the demo menu changes.
-        $(that.selectors.demosMenu).change(that.loadSelectedDemo);
-    };
 
     function getFirepadRef() {
       var ref = new Firebase('https://flickering-heat-7384.firebaseio.com');
@@ -127,32 +131,68 @@ var fluid = fluid || require("infusion"),
         flock.enviro.shared.reset();
     }
 
+    function initializePlay(that){
+        console.log('blah');
+        getPlaying(that);
+        if (that.playing == undefined)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
     demo.liveEditorView = function (editorId, selectors) {
         selectors = selectors || {
-            playButton: ".playButton"
+            playButton: ".playButton",
+            reloadButton: ".reloadButton"
         };
 
         var that = {
             editor: null,
             isPlaying: false,
             playButton: $(selectors.playButton),
+            reloadButton: $(selectors.reloadButton),
             selectors: selectors
         };
 
         setupEditor(that, editorId);
         setupPlayButton(that);
-        setupLoadControls(that);
-        that.simulated = false;        
+        setupReloadButton(that);
 
         that.eventsRef.on('child_changed',function(snapshot){
-            getPlaying(that);           
+            getPlaying(that);          
             if (that.playing) { // && !flock.enviro.shared.model.isPlaying
                 playBack(that);
             } else {
                 pauseBack(that);
             }
         });
+
+        var fireBaseInitialized;
+        var waitForInitialized = setInterval(function(){
+            fireBaseInitialized = initializePlay(that);
+            if (fireBaseInitialized && that.firePadInitialized) 
+                {                    
+                    if (that.playing)
+                    {            
+                        console.log('on');
+                        playBack(that);
+                    }
+                    else
+                    {
+                        console.log('halb');
+                    }
+                    clearInterval(waitForInitialized);
+                }
+            },50);                
+            
+
+        
+
         return that;
     };
-
+    
 }());
