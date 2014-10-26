@@ -32,43 +32,5 @@
             var editorView = demo.liveEditorView("#editorRegion");
         </script>
   <div id="firepad-container"></div>
-<!--
-  <script>
-    function init() {
-      //// Initialize Firebase.
-      var firepadRef = getExampleRef();
-      // TODO: Replace above line with:
-      // var ref = new Firebase('<YOUR FIREBASE URL>');
-
-      //// Create CodeMirror (with line numbers and the JavaScript mode).
-      var codeMirror = CodeMirror(document.getElementById('firepad-container'), {
-        lineNumbers: true,
-        mode: 'javascript'
-      });
-
-      //// Create Firepad.
-      var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror, {
-        defaultText: '// JavaScript Editing with Firepad!\nfunction go() {\n  var message = "Hello, world.";\n  console.log(message);\n}'
-      });
-    }
-
-    // Helper to get hash from end of URL or generate a random one.
-    function getExampleRef() {
-      var ref = new Firebase('https://firepad.firebaseio-demo.com');
-      var hash = window.location.hash.replace(/#/g, '');
-      if (hash) {
-        ref = ref.child(hash);
-      } else {
-        ref = ref.push(); // generate unique location.
-        window.location = window.location + '#' + ref.name(); // add it as a hash to the URL.
-      }
-      if (typeof console !== 'undefined')
-        console.log('Firebase data: ', ref.toString());
-      return ref;
-    }
-
-    init();
-  </script>
--->
 </body>
 
